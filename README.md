@@ -3,7 +3,7 @@
 
 ## Build
 `make` : build the executable\
-`make libinjector.so` : build the the shared library\
+`make libinjector.so` : build the shared library\
 `make all` : build both
 
 ## Installation
@@ -14,4 +14,4 @@
 `make clean` : delete build and bin folders
 
 ## Run
-`library_injector <process name> <library path>"`
+`library_injector <process name> <library path>`

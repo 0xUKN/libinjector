@@ -10,9 +10,9 @@
 #include <sys/wait.h>
 #include <dlfcn.h>
 #include <sys/user.h>
-#include "TracedProcess.hpp"
+#include "../include/TracedProcess.hpp"
 #include <errno.h>
-#include "Utils.hpp"
+#include "../include/Utils.hpp"
 #define LIBC "libc-2.29.so"
 #define LINKER "libdl-2.29.so"
 #define ALLOWED_TRIES 10

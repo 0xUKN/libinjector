@@ -9,7 +9,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <cstring>
-#include "Utils.hpp"
+#include "../include/Utils.hpp"
 
 namespace LibraryInjector
 {

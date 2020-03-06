@@ -1,7 +1,7 @@
 #include <iostream>
 #include <limits.h>
 #include <unistd.h>
-#include "TracedProcess.hpp"
+#include "../include/TracedProcess.hpp"
 
 int main(int argc, char* argv[])
 {	
@@ -35,5 +35,4 @@ int main(int argc, char* argv[])
 	delete proc;
 	return 0;
 }
-//g++ library_injector.cpp Utils.cpp TracedProcess.cpp -o library_injector -ldl
 

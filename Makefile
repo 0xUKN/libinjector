@@ -27,6 +27,12 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $< -o $@ $(CCFLAGS)
 
+install: $(EXEC)
+	cp $(BIN_DIR)/$(EXEC) /usr/$(BIN_DIR)/$(EXEC)
+
+uninstall:
+	rm -f /usr/$(BIN_DIR)/$(EXEC)
+
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
 

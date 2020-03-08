@@ -85,5 +85,39 @@ namespace LibraryInjector
 			fclose(fd);
 			return lib_ptr;
 		}
+
+		std::string GetLibraryFullName(std::string library_name, pid_t pid = -1)
+		{
+			char maps_path[200];
+			char maps_content[400];
+			char * lib_ptr = NULL;
+			FILE* fd = NULL;
+			if(pid <= 0) 
+			{
+				snprintf(maps_path, sizeof(maps_path) - 1, "/proc/%s/maps", "self");
+			}
+			else
+			{
+				snprintf(maps_path, sizeof(maps_path) - 1, "/proc/%d/maps", pid);
+			}
+			fd = fopen(maps_path, "r");
+			if(fd == NULL) 
+			{ 
+				perror("open");
+				return std::string(""); 
+			}
+			while(fgets(maps_content, sizeof(maps_content), fd))
+			{
+				if(strstr(maps_content, library_name.c_str()))
+				{
+					lib_ptr = strstr(maps_content, "/");
+					size_t len = strlen(lib_ptr);
+					*(lib_ptr + len - 1) = 0;
+					break;
+				}
+			}
+			fclose(fd);
+			return std::string(lib_ptr);
+		}
 	}
 }

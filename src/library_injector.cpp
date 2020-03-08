@@ -5,9 +5,11 @@
 
 int main(int argc, char* argv[])
 {	
+	LibraryInjector::TracedProcess* proc;
+	char * p = NULL;
 	if(argc != 3)
 	{
-		std::cerr << "Usage : " << argv[0] << " <process name> <library name>" << std::endl;
+		std::cerr << "Usage : " << argv[0] << " <process name or PID> <library name>" << std::endl;
 		return 1;
 	}
 	char library_path[PATH_MAX];
@@ -18,7 +20,16 @@ int main(int argc, char* argv[])
 	}
 	std::string process_name = std::string(argv[1]);
 	std::string library_name = std::string(library_path);
-	LibraryInjector::TracedProcess* proc = LibraryInjector::Attach(process_name);
+
+	unsigned long converted = strtoul(argv[1], &p, 10);
+	if (*p) 
+	{
+		proc = LibraryInjector::AttachByName(process_name);
+	}
+	else 
+	{
+		proc = LibraryInjector::AttachByPID(converted);
+	}
 	if(proc == NULL) 
 	{ 
 		std::cerr << "[-] Process " << process_name << " not found" << std::endl;

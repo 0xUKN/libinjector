@@ -13,8 +13,8 @@
 #include "../include/TracedProcess.hpp"
 #include <errno.h>
 #include "../include/Utils.hpp"
-#define LIBC "libc-2.29.so"
-#define LINKER "libdl-2.29.so"
+#define LIBC_PREFIX "libc"
+#define LINKER_PREFIX "libdl"
 #define ALLOWED_TRIES 10
 //#define DEBUG
 //#define DEBUG_2
@@ -28,13 +28,23 @@ namespace LibraryInjector
 		if(_pid > 0 && ptrace(PTRACE_ATTACH, _pid, NULL, NULL) != -1 && waitpid(_pid, &status, WUNTRACED) && ptrace(PTRACE_SETOPTIONS, _pid, NULL, PTRACE_O_TRACESYSGOOD) != -1)
 		{
 			pid = _pid;
+			std::string LIBC = Utils::GetLibraryFullName(LIBC_PREFIX, -1);
+			std::string LINKER = Utils::GetLibraryFullName(LINKER_PREFIX, -1);
+			if(LIBC.length() == 0 || LINKER.length() == 0)
+			{
+				throw std::runtime_error("Error: Could not found required library (libc and libdb) in target process");
+			}
+			#ifdef DEBUG
+			std::cout << "[+] LIBC NAME : " << LIBC << std::endl;
+			std::cout << "[+] LIBDL NAME : " << LINKER << std::endl;
+			#endif
 			libc_base_addr = Utils::GetLibraryBaseAddress(LIBC, pid);
 			linker_base_addr = Utils::GetLibraryBaseAddress(LINKER, pid);
 			void* local_libc_base_addr = Utils::GetLibraryBaseAddress(LIBC, getpid());
 			void* local_linker_base_addr = Utils::GetLibraryBaseAddress(LINKER, getpid());
-			void* local_malloc_addr = dlsym(dlopen(LIBC, RTLD_LAZY), "malloc");
-			void* local_free_addr = dlsym(dlopen(LIBC, RTLD_LAZY), "free");
-			void* local_dlopen_addr = dlsym(dlopen(LINKER, RTLD_LAZY), "dlopen");
+			void* local_malloc_addr = dlsym(dlopen(LIBC.c_str(), RTLD_LAZY), "malloc");
+			void* local_free_addr = dlsym(dlopen(LIBC.c_str(), RTLD_LAZY), "free");
+			void* local_dlopen_addr = dlsym(dlopen(LINKER.c_str(), RTLD_LAZY), "dlopen");
 			if(libc_base_addr == NULL || linker_base_addr == NULL || local_libc_base_addr == NULL || local_linker_base_addr == NULL)
 			{
 				throw std::runtime_error("Error: Could not found required library");
@@ -516,9 +526,17 @@ namespace LibraryInjector
 		//perror("ptrace");
 	}
 	
-	TracedProcess* Attach(std::string process_name)
+	TracedProcess* AttachByName(std::string process_name)
 	{
-		long pid = Utils::GetPIDFromProcessName(process_name);
+		pid_t pid = Utils::GetPIDFromProcessName(process_name);
+		TracedProcess* proc = NULL;
+		try { proc = new TracedProcess(pid); }
+		catch(...) { proc = NULL; }
+		return proc;
+	}
+
+	TracedProcess* AttachByPID(pid_t pid)
+	{
 		TracedProcess* proc = NULL;
 		try { proc = new TracedProcess(pid); }
 		catch(...) { proc = NULL; }

@@ -8,5 +8,6 @@ namespace LibraryInjector
 	{
 		pid_t GetPIDFromProcessName(std::string proc_name);
 		void * GetLibraryBaseAddress(std::string library_name, pid_t pid);
+		std::string GetLibraryFullName(std::string library_name, pid_t pid);
 	}
 }

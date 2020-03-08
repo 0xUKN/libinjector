@@ -32,5 +32,6 @@ namespace LibraryInjector
 			int LoadLibrary(std::string library_name);
 			~TracedProcess();
 	};
-	TracedProcess* Attach(std::string process_name);
+	TracedProcess* AttachByName(std::string process_name);
+	TracedProcess* AttachByPID(pid_t pid);
 }
